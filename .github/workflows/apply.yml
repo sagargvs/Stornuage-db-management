@@ -32,7 +32,7 @@ jobs:
             -e "s|\${LB_URL}|${LB_URL}|g" \
             -e "s|\${LB_USER}|${LB_USER}|g" \
             -e "s|\${LB_PASSWORD}|${LB_PASSWORD}|g" \
-            liquibase.properties.template > liquibase.properties
+            liquibase.properties.template > src/main/resources/liquibase.properties
 
       - name: liquibase status
         run: mvn -B liquibase:status

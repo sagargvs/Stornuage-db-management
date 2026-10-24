@@ -1,4 +1,4 @@
-changeLogFile=src/main/resources/master-changelog.xml
+changeLogFile=master-changelog.xml
 url=${LB_URL}
 username=${LB_USER}
 password=${LB_PASSWORD}

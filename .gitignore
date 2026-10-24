@@ -1,4 +1,5 @@
 liquibase.properties
+src/main/resources/liquibase.properties
 target/
 .idea/
 *.iml

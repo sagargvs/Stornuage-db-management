@@ -14,6 +14,14 @@
         </comment>
         <dropColumn tableName="notification_delivery_log" schemaName="stornuage_notifications"
                     columnName="retry_count"/>
+
+        <rollback>
+            <addColumn tableName="notification_delivery_log" schemaName="stornuage_notifications">
+                <column name="retry_count" type="INT" defaultValueNumeric="0">
+                    <constraints nullable="false"/>
+                </column>
+            </addColumn>
+        </rollback>
     </changeSet>
 
 </databaseChangeLog>

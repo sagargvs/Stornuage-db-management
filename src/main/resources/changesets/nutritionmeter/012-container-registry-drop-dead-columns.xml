@@ -18,6 +18,14 @@
                     columnName="consumption_rate_per_day"/>
         <dropColumn tableName="container_registry" schemaName="nutritionmeter"
                     columnName="estimated_days_remaining"/>
+
+        <rollback>
+            <addColumn tableName="container_registry" schemaName="nutritionmeter">
+                <column name="alternative_item_keys" type="JSONB"/>
+                <column name="consumption_rate_per_day" type="NUMERIC(10,2)"/>
+                <column name="estimated_days_remaining" type="NUMERIC(6,2)"/>
+            </addColumn>
+        </rollback>
     </changeSet>
 
 </databaseChangeLog>

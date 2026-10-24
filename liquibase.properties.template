@@ -1,0 +1,8 @@
+changeLogFile=src/main/resources/master-changelog.xml
+url=${LB_URL}
+username=${LB_USER}
+password=${LB_PASSWORD}
+driver=org.postgresql.Driver
+databaseChangeLogTableName=databasechangelog
+databaseChangeLogLockTableName=databasechangeloglock
+logLevel=INFO

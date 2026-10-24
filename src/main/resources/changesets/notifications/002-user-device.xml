@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+                            http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-4.20.xsd">
+
+    <changeSet id="notifications-002-user-devices" author="stornuage">
+        <createTable tableName="user_devices" schemaName="stornuage_notifications">
+            <column name="device_id" type="UUID" defaultValueComputed="gen_random_uuid()">
+                <constraints primaryKey="true" nullable="false"/>
+            </column>
+            <column name="customer_id" type="VARCHAR(64)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="user_id" type="VARCHAR(64)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="fcm_token" type="TEXT">
+                <constraints nullable="false"/>
+            </column>
+            <column name="platform" type="VARCHAR(16)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="device_model" type="VARCHAR(128)"/>
+            <column name="os_version" type="VARCHAR(32)"/>
+            <column name="app_version" type="VARCHAR(32)"/>
+            <column name="created_at" type="TIMESTAMPTZ" defaultValueComputed="NOW()">
+                <constraints nullable="false"/>
+            </column>
+            <column name="last_seen_at" type="TIMESTAMPTZ" defaultValueComputed="NOW()">
+                <constraints nullable="false"/>
+            </column>
+            <column name="revoked_at" type="TIMESTAMPTZ"/>
+            <column name="revoke_reason" type="VARCHAR(64)"/>
+        </createTable>
+
+        <sql>ALTER TABLE stornuage_notifications.user_devices ADD CONSTRAINT ck_user_devices_platform CHECK (platform IN ('IOS','ANDROID'));</sql>
+
+        <sql>CREATE UNIQUE INDEX ux_user_devices_active_token ON stornuage_notifications.user_devices (user_id, fcm_token) WHERE revoked_at IS NULL;</sql>
+        <sql>CREATE INDEX ix_user_devices_user_active ON stornuage_notifications.user_devices (user_id) WHERE revoked_at IS NULL;</sql>
+        <sql>CREATE INDEX ix_user_devices_customer_active ON stornuage_notifications.user_devices (customer_id) WHERE revoked_at IS NULL;</sql>
+
+        <rollback>
+            <dropTable tableName="user_devices" schemaName="stornuage_notifications"/>
+        </rollback>
+    </changeSet>
+
+</databaseChangeLog>

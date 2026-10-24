@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+                            http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-4.20.xsd">
+
+    <include file="001-create-schema.xml" relativeToChangelogFile="true"/>
+    <include file="002-container-profile.xml" relativeToChangelogFile="true"/>
+    <include file="003-item-nutrition.xml" relativeToChangelogFile="true"/>
+    <include file="004-container-registry.xml" relativeToChangelogFile="true"/>
+    <include file="005-consumption-event.xml" relativeToChangelogFile="true"/>
+    <include file="006-item-depletion-forecast.xml" relativeToChangelogFile="true"/>
+    <include file="007-nutrition-summary.xml" relativeToChangelogFile="true"/>
+    <include file="008-idempotency-key.xml" relativeToChangelogFile="true"/>
+    <include file="009-outbox.xml" relativeToChangelogFile="true"/>
+    <include file="010-seed-data.xml" relativeToChangelogFile="true"/>
+    <include file="011-container-registry-cleanup.xml" relativeToChangelogFile="true"/>
+    <include file="012-container-registry-drop-dead-columns.xml" relativeToChangelogFile="true"/>
+
+</databaseChangeLog>

@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+                            http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-4.20.xsd">
+
+    <changeSet id="integration-003-container-registry-pending" author="stornuage">
+        <addColumn tableName="container_registry" schemaName="integration">
+            <column name="has_pending_telemetry" type="BOOLEAN" defaultValueBoolean="false">
+                <constraints nullable="false"/>
+            </column>
+            <column name="pending_lidar_distance_mm" type="NUMERIC(6,2)"/>
+            <column name="pending_image_key" type="VARCHAR(500)"/>
+            <column name="pending_timestamp" type="TIMESTAMPTZ"/>
+            <column name="pending_battery_percentage" type="NUMERIC(5,2)"/>
+            <column name="last_distance_mm" type="NUMERIC(6,2)"/>
+            <column name="last_reading_at" type="TIMESTAMPTZ"/>
+            <column name="last_predicted_item" type="VARCHAR(100)"/>
+            <column name="prediction_status" type="VARCHAR(30)"/>
+            <column name="last_prediction_at" type="TIMESTAMPTZ"/>
+        </addColumn>
+
+        <rollback>
+            <dropColumn tableName="container_registry" schemaName="integration">
+                <column name="has_pending_telemetry"/>
+                <column name="pending_lidar_distance_mm"/>
+                <column name="pending_image_key"/>
+                <column name="pending_timestamp"/>
+                <column name="pending_battery_percentage"/>
+                <column name="last_distance_mm"/>
+                <column name="last_reading_at"/>
+                <column name="last_predicted_item"/>
+                <column name="prediction_status"/>
+                <column name="last_prediction_at"/>
+            </dropColumn>
+        </rollback>
+    </changeSet>
+
+</databaseChangeLog>

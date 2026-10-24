@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+                            http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-4.20.xsd">
+
+    <include file="001-create-schema.xml" relativeToChangelogFile="true"/>
+    <include file="002-container-registry.xml" relativeToChangelogFile="true"/>
+    <include file="003-container-registry-pending.xml" relativeToChangelogFile="true"/>
+    <include file="004-container-registry-rename-pending.xml" relativeToChangelogFile="true"/>
+    <include file="005-idempotency-key.xml" relativeToChangelogFile="true"/>
+    <include file="006-outbox.xml" relativeToChangelogFile="true"/>
+
+</databaseChangeLog>

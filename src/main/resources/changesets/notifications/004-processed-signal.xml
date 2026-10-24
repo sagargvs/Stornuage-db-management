@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+                            http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-4.20.xsd">
+
+    <changeSet id="notifications-004-processed-signals" author="stornuage">
+        <createTable tableName="processed_signals" schemaName="stornuage_notifications">
+            <column name="signal_id" type="VARCHAR(128)">
+                <constraints primaryKey="true" nullable="false"/>
+            </column>
+            <column name="received_at" type="TIMESTAMPTZ" defaultValueComputed="NOW()">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+
+        <createIndex indexName="ix_processed_signals_cleanup" tableName="processed_signals" schemaName="stornuage_notifications">
+            <column name="received_at"/>
+        </createIndex>
+
+        <rollback>
+            <dropTable tableName="processed_signals" schemaName="stornuage_notifications"/>
+        </rollback>
+    </changeSet>
+
+</databaseChangeLog>

@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+                            http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-4.20.xsd">
+
+    <changeSet id="notifications-005-alert-state-audit" author="stornuage">
+        <createTable tableName="alert_state_audit" schemaName="stornuage_notifications">
+            <column name="audit_id" type="BIGSERIAL" autoIncrement="true">
+                <constraints primaryKey="true" nullable="false"/>
+            </column>
+            <column name="alert_id" type="UUID">
+                <constraints nullable="false"/>
+            </column>
+            <column name="from_state" type="VARCHAR(16)"/>
+            <column name="to_state" type="VARCHAR(16)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="from_severity" type="VARCHAR(16)"/>
+            <column name="to_severity" type="VARCHAR(16)"/>
+            <column name="trigger_signal" type="VARCHAR(128)"/>
+            <column name="reason" type="TEXT"/>
+            <column name="actor" type="VARCHAR(64)" defaultValue="SYSTEM">
+                <constraints nullable="false"/>
+            </column>
+            <column name="occurred_at" type="TIMESTAMPTZ" defaultValueComputed="NOW()">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+
+        <createIndex indexName="ix_audit_alert" tableName="alert_state_audit" schemaName="stornuage_notifications">
+            <column name="alert_id"/>
+        </createIndex>
+
+        <createIndex indexName="ix_audit_time" tableName="alert_state_audit" schemaName="stornuage_notifications">
+            <column name="occurred_at" descending="true"/>
+        </createIndex>
+
+        <rollback>
+            <dropTable tableName="alert_state_audit" schemaName="stornuage_notifications"/>
+        </rollback>
+    </changeSet>
+
+</databaseChangeLog>

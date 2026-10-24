@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+
+    <groupId>com.stornuage</groupId>
+    <artifactId>stornuage-db-management</artifactId>
+    <version>1.0.0</version>
+    <packaging>pom</packaging>
+
+    <name>StorNuAge DB Management</name>
+    <description>Centralized Liquibase changesets for integration, nutritionmeter, and notification schemas.</description>
+
+    <properties>
+        <liquibase.version>4.29.2</liquibase.version>
+        <postgresql.version>42.7.4</postgresql.version>
+        <liquibase.propertyFile>liquibase.properties</liquibase.propertyFile>
+    </properties>
+
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>org.liquibase</groupId>
+                <artifactId>liquibase-maven-plugin</artifactId>
+                <version>${liquibase.version}</version>
+                <configuration>
+                    <propertyFile>${liquibase.propertyFile}</propertyFile>
+                    <searchPath>src/main/resources</searchPath>
+                </configuration>
+                <dependencies>
+                    <dependency>
+                        <groupId>org.postgresql</groupId>
+                        <artifactId>postgresql</artifactId>
+                        <version>${postgresql.version}</version>
+                    </dependency>
+                </dependencies>
+            </plugin>
+        </plugins>
+    </build>
+</project>

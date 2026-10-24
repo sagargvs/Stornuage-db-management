@@ -1,0 +1,73 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+                            http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-4.20.xsd">
+
+    <changeSet id="notifications-003-alert-state" author="stornuage">
+        <createTable tableName="alert_state" schemaName="stornuage_notifications">
+            <column name="alert_id" type="UUID" defaultValueComputed="gen_random_uuid()">
+                <constraints primaryKey="true" nullable="false"/>
+            </column>
+            <column name="customer_id" type="VARCHAR(64)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="user_id" type="VARCHAR(64)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="container_id" type="VARCHAR(64)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="alert_type" type="VARCHAR(32)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="severity" type="VARCHAR(16)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="state" type="VARCHAR(16)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="item_name" type="VARCHAR(128)"/>
+            <column name="item_display_name" type="VARCHAR(128)"/>
+            <column name="metric_payload" type="JSONB"/>
+            <column name="escalation_level" type="INT" defaultValueNumeric="1">
+                <constraints nullable="false"/>
+            </column>
+            <column name="first_fired_at" type="TIMESTAMPTZ" defaultValueComputed="NOW()">
+                <constraints nullable="false"/>
+            </column>
+            <column name="last_fired_at" type="TIMESTAMPTZ" defaultValueComputed="NOW()">
+                <constraints nullable="false"/>
+            </column>
+            <column name="last_notification_sent_at" type="TIMESTAMPTZ"/>
+            <column name="acknowledged_at" type="TIMESTAMPTZ"/>
+            <column name="resolved_at" type="TIMESTAMPTZ"/>
+            <column name="resolved_reason" type="VARCHAR(64)"/>
+            <column name="version" type="BIGINT" defaultValueNumeric="0">
+                <constraints nullable="false"/>
+            </column>
+            <column name="created_at" type="TIMESTAMPTZ" defaultValueComputed="NOW()">
+                <constraints nullable="false"/>
+            </column>
+            <column name="updated_at" type="TIMESTAMPTZ" defaultValueComputed="NOW()">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+
+        <sql>ALTER TABLE stornuage_notifications.alert_state ADD CONSTRAINT ck_alert_state_type CHECK (alert_type IN ('FILL_CRITICAL','DEPLETION_WARNING','BATTERY_LOW'));</sql>
+        <sql>ALTER TABLE stornuage_notifications.alert_state ADD CONSTRAINT ck_alert_state_severity CHECK (severity IN ('WARNING','CRITICAL'));</sql>
+        <sql>ALTER TABLE stornuage_notifications.alert_state ADD CONSTRAINT ck_alert_state_state CHECK (state IN ('ACTIVE','ACKNOWLEDGED','RESOLVED'));</sql>
+
+        <sql>CREATE UNIQUE INDEX ux_alert_state_active_per_type ON stornuage_notifications.alert_state (container_id, alert_type) WHERE state IN ('ACTIVE','ACKNOWLEDGED');</sql>
+        <sql>CREATE INDEX ix_alert_state_customer ON stornuage_notifications.alert_state (customer_id, state);</sql>
+        <sql>CREATE INDEX ix_alert_state_user ON stornuage_notifications.alert_state (user_id, state);</sql>
+        <sql>CREATE INDEX ix_alert_state_container ON stornuage_notifications.alert_state (container_id);</sql>
+        <sql>CREATE INDEX ix_alert_state_history_lookup ON stornuage_notifications.alert_state (customer_id, created_at DESC);</sql>
+
+        <rollback>
+            <dropTable tableName="alert_state" schemaName="stornuage_notifications"/>
+        </rollback>
+    </changeSet>
+
+</databaseChangeLog>

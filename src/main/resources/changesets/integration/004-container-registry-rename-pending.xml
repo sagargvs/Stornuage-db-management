@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+                            http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-4.20.xsd">
+
+    <changeSet id="integration-004-rename-pending-to-ip-parked" author="stornuage">
+        <comment>
+            Rename integration-side pending-telemetry columns to ip_parked_* to disambiguate
+            from the identically-named columns in nutritionmeter.container_registry, which
+            back a different saga (user-correction) with a very different lifetime.
+            Integration's saga parks a reading while the IP service answers; nutritionmeter's
+            saga parks a reading while the user confirms. Different rows, different schemas,
+            different lifetimes — but previously identical names.
+        </comment>
+        <renameColumn tableName="container_registry" schemaName="integration"
+                      oldColumnName="has_pending_telemetry" newColumnName="has_ip_parked_telemetry"
+                      columnDataType="BOOLEAN"/>
+        <renameColumn tableName="container_registry" schemaName="integration"
+                      oldColumnName="pending_lidar_distance_mm" newColumnName="ip_parked_lidar_distance_mm"
+                      columnDataType="NUMERIC(6,2)"/>
+        <renameColumn tableName="container_registry" schemaName="integration"
+                      oldColumnName="pending_image_key" newColumnName="ip_parked_image_key"
+                      columnDataType="VARCHAR(500)"/>
+        <renameColumn tableName="container_registry" schemaName="integration"
+                      oldColumnName="pending_timestamp" newColumnName="ip_parked_timestamp"
+                      columnDataType="TIMESTAMPTZ"/>
+        <renameColumn tableName="container_registry" schemaName="integration"
+                      oldColumnName="pending_battery_percentage" newColumnName="ip_parked_battery_percentage"
+                      columnDataType="NUMERIC(5,2)"/>
+    </changeSet>
+
+</databaseChangeLog>

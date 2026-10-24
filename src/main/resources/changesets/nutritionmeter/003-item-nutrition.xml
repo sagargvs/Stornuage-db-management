@@ -1,0 +1,68 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+                            http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-4.20.xsd">
+
+    <changeSet id="nutritionmeter-003-item-nutrition" author="stornuage">
+        <createTable tableName="item_nutrition" schemaName="nutritionmeter">
+            <column name="id" type="UUID" defaultValueComputed="gen_random_uuid()">
+                <constraints primaryKey="true" nullable="false"/>
+            </column>
+            <column name="item_key" type="VARCHAR(50)">
+                <constraints nullable="false" unique="true"/>
+            </column>
+            <column name="display_name" type="VARCHAR(100)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="display_name_regional" type="JSONB" defaultValue="{}"/>
+            <column name="category" type="VARCHAR(30)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="density" type="NUMERIC(5,3)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="density_min" type="NUMERIC(5,3)"/>
+            <column name="density_max" type="NUMERIC(5,3)"/>
+            <column name="calories" type="NUMERIC(8,2)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="protein_g" type="NUMERIC(8,2)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="carbohydrates_g" type="NUMERIC(8,2)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="fat_g" type="NUMERIC(8,2)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="fiber_g" type="NUMERIC(8,2)" defaultValueNumeric="0"/>
+            <column name="iron_mg" type="NUMERIC(8,3)" defaultValueNumeric="0"/>
+            <column name="calcium_mg" type="NUMERIC(8,3)" defaultValueNumeric="0"/>
+            <column name="zinc_mg" type="NUMERIC(8,3)" defaultValueNumeric="0"/>
+            <column name="vitamin_a_mcg" type="NUMERIC(8,3)" defaultValueNumeric="0"/>
+            <column name="vitamin_c_mg" type="NUMERIC(8,3)" defaultValueNumeric="0"/>
+            <column name="other_nutrients" type="JSONB" defaultValue="{}"/>
+            <column name="source" type="VARCHAR(50)" defaultValue="IFCT_2017"/>
+            <column name="is_active" type="BOOLEAN" defaultValueBoolean="true">
+                <constraints nullable="false"/>
+            </column>
+            <column name="created_at" type="TIMESTAMPTZ" defaultValueComputed="NOW()">
+                <constraints nullable="false"/>
+            </column>
+            <column name="updated_at" type="TIMESTAMPTZ" defaultValueComputed="NOW()">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+
+        <createIndex indexName="idx_item_nutrition_category" tableName="item_nutrition" schemaName="nutritionmeter">
+            <column name="category"/>
+        </createIndex>
+
+        <rollback>
+            <dropTable tableName="item_nutrition" schemaName="nutritionmeter"/>
+        </rollback>
+    </changeSet>
+
+</databaseChangeLog>

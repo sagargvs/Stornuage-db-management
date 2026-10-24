@@ -1,0 +1,76 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+                            http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-4.20.xsd">
+
+    <changeSet id="notifications-006-notification-delivery-log" author="stornuage">
+        <createTable tableName="notification_delivery_log" schemaName="stornuage_notifications">
+            <column name="delivery_id" type="UUID" defaultValueComputed="gen_random_uuid()">
+                <constraints primaryKey="true" nullable="false"/>
+            </column>
+            <column name="alert_id" type="UUID">
+                <constraints nullable="false" foreignKeyName="fk_delivery_alert"
+                             referencedTableSchemaName="stornuage_notifications"
+                             referencedTableName="alert_state" referencedColumnNames="alert_id"/>
+            </column>
+            <column name="customer_id" type="VARCHAR(64)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="user_id" type="VARCHAR(64)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="device_id" type="UUID">
+                <constraints nullable="false" foreignKeyName="fk_delivery_device"
+                             referencedTableSchemaName="stornuage_notifications"
+                             referencedTableName="user_devices" referencedColumnNames="device_id"/>
+            </column>
+            <column name="fcm_message_id" type="VARCHAR(256)"/>
+            <column name="status" type="VARCHAR(16)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="error_code" type="VARCHAR(64)"/>
+            <column name="error_message" type="TEXT"/>
+            <column name="retry_count" type="INT" defaultValueNumeric="0">
+                <constraints nullable="false"/>
+            </column>
+            <column name="notification_title" type="VARCHAR(256)"/>
+            <column name="notification_body" type="VARCHAR(512)"/>
+            <column name="collapse_key" type="VARCHAR(255)"/>
+            <column name="sent_at" type="TIMESTAMPTZ"/>
+            <column name="failed_at" type="TIMESTAMPTZ"/>
+            <column name="created_at" type="TIMESTAMPTZ" defaultValueComputed="NOW()">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+
+        <sql>ALTER TABLE stornuage_notifications.notification_delivery_log ADD CONSTRAINT ck_delivery_status CHECK (status IN ('PENDING','SENT','FAILED','DROPPED'));</sql>
+
+        <createIndex indexName="ix_delivery_log_alert" tableName="notification_delivery_log" schemaName="stornuage_notifications">
+            <column name="alert_id"/>
+        </createIndex>
+
+        <createIndex indexName="ix_delivery_log_customer_recent" tableName="notification_delivery_log" schemaName="stornuage_notifications">
+            <column name="customer_id"/>
+            <column name="created_at" descending="true"/>
+        </createIndex>
+
+        <createIndex indexName="ix_delivery_log_user_recent" tableName="notification_delivery_log" schemaName="stornuage_notifications">
+            <column name="user_id"/>
+            <column name="created_at" descending="true"/>
+        </createIndex>
+
+        <createIndex indexName="ix_delivery_log_status" tableName="notification_delivery_log" schemaName="stornuage_notifications">
+            <column name="status"/>
+            <column name="created_at"/>
+        </createIndex>
+
+        <sql>CREATE INDEX idx_nd_user_device_collapse_key ON stornuage_notifications.notification_delivery_log (user_id, device_id, collapse_key) WHERE status = 'SENT';</sql>
+
+        <rollback>
+            <dropTable tableName="notification_delivery_log" schemaName="stornuage_notifications"/>
+        </rollback>
+    </changeSet>
+
+</databaseChangeLog>

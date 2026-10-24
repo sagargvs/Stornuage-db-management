@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+                            http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-4.20.xsd">
+
+    <changeSet id="nutritionmeter-012-drop-dead-registry-columns" author="stornuage">
+        <comment>
+            Drop columns that have never been written or read by any service.
+            - alternative_item_keys: declared on the entity but never populated.
+            - consumption_rate_per_day / estimated_days_remaining: placeholders for a
+              feature that was never built (depletion math lives in item_depletion_forecast).
+        </comment>
+        <dropColumn tableName="container_registry" schemaName="nutritionmeter"
+                    columnName="alternative_item_keys"/>
+        <dropColumn tableName="container_registry" schemaName="nutritionmeter"
+                    columnName="consumption_rate_per_day"/>
+        <dropColumn tableName="container_registry" schemaName="nutritionmeter"
+                    columnName="estimated_days_remaining"/>
+    </changeSet>
+
+</databaseChangeLog>

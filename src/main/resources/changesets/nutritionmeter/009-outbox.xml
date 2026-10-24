@@ -1,0 +1,68 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+                            http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-4.20.xsd">
+
+    <changeSet id="nutritionmeter-009-outbox" author="stornuage">
+        <createTable tableName="outbox" schemaName="nutritionmeter">
+            <column name="id" type="UUID" defaultValueComputed="gen_random_uuid()">
+                <constraints primaryKey="true" nullable="false"/>
+            </column>
+            <column name="aggregate_type" type="VARCHAR(50)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="aggregate_id" type="VARCHAR(100)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="event_type" type="VARCHAR(80)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="destination" type="VARCHAR(255)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="message_group_id" type="VARCHAR(128)"/>
+            <column name="deduplication_id" type="VARCHAR(128)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="payload" type="JSONB">
+                <constraints nullable="false"/>
+            </column>
+            <column name="headers" type="JSONB"/>
+            <column name="status" type="VARCHAR(20)" defaultValue="PENDING">
+                <constraints nullable="false"/>
+            </column>
+            <column name="attempts" type="INT" defaultValueNumeric="0">
+                <constraints nullable="false"/>
+            </column>
+            <column name="next_attempt_at" type="TIMESTAMPTZ" defaultValueComputed="NOW()">
+                <constraints nullable="false"/>
+            </column>
+            <column name="last_error" type="TEXT"/>
+            <column name="created_at" type="TIMESTAMPTZ" defaultValueComputed="NOW()">
+                <constraints nullable="false"/>
+            </column>
+            <column name="published_at" type="TIMESTAMPTZ"/>
+        </createTable>
+
+        <addUniqueConstraint tableName="outbox" schemaName="nutritionmeter"
+                             columnNames="deduplication_id"
+                             constraintName="uq_nm_outbox_deduplication_id"/>
+
+        <createIndex indexName="idx_nm_outbox_status_next_attempt" tableName="outbox" schemaName="nutritionmeter">
+            <column name="status"/>
+            <column name="next_attempt_at"/>
+        </createIndex>
+
+        <createIndex indexName="idx_nm_outbox_aggregate" tableName="outbox" schemaName="nutritionmeter">
+            <column name="aggregate_type"/>
+            <column name="aggregate_id"/>
+        </createIndex>
+
+        <rollback>
+            <dropTable tableName="outbox" schemaName="nutritionmeter"/>
+        </rollback>
+    </changeSet>
+
+</databaseChangeLog>

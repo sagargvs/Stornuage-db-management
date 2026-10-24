@@ -1,0 +1,61 @@
+name: Validate Liquibase Changesets
+
+on:
+  pull_request:
+    branches: [ main ]
+    paths:
+      - 'src/main/resources/**'
+      - 'pom.xml'
+      - '.github/workflows/validate.yml'
+
+jobs:
+  validate:
+    name: Validate changesets against ephemeral Postgres
+    runs-on: ubuntu-latest
+
+    services:
+      postgres:
+        image: postgres:16-alpine
+        env:
+          POSTGRES_USER: liquibase
+          POSTGRES_PASSWORD: liquibase
+          POSTGRES_DB: stornuage
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd "pg_isready -U liquibase"
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 10
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up JDK 17
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '17'
+          cache: maven
+
+      - name: Render liquibase.properties
+        run: |
+          sed \
+            -e "s|\${LB_URL}|jdbc:postgresql://localhost:5432/stornuage|g" \
+            -e "s|\${LB_USER}|liquibase|g" \
+            -e "s|\${LB_PASSWORD}|liquibase|g" \
+            liquibase.properties.template > liquibase.properties
+
+      - name: liquibase validate
+        run: mvn -B liquibase:validate
+
+      - name: liquibase update (contexts=dev,staging)
+        run: mvn -B liquibase:update "-Dliquibase.contexts=dev,staging"
+
+      - name: liquibase status (expect zero pending)
+        run: mvn -B liquibase:status "-Dliquibase.verbose=true" | tee status.log && ! grep -qi "change set.*to be run" status.log
+
+      - name: liquibase rollback count 1 per schema (smoke)
+        run: |
+          mvn -B liquibase:rollback -Dliquibase.rollbackCount=1

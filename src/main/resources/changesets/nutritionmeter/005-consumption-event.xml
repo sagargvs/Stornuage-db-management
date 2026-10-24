@@ -1,0 +1,75 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+                            http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-4.20.xsd">
+
+    <changeSet id="nutritionmeter-005-consumption-event" author="stornuage">
+        <createTable tableName="consumption_events" schemaName="nutritionmeter">
+            <column name="id" type="UUID" defaultValueComputed="gen_random_uuid()">
+                <constraints primaryKey="true" nullable="false"/>
+            </column>
+            <column name="container_id" type="VARCHAR(50)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="customer_id" type="VARCHAR(50)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="event_time" type="TIMESTAMPTZ">
+                <constraints nullable="false"/>
+            </column>
+            <column name="item_key" type="VARCHAR(50)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="item_display_name" type="VARCHAR(100)"/>
+            <column name="item_category" type="VARCHAR(30)"/>
+            <column name="volume_before_ml" type="NUMERIC(8,2)"/>
+            <column name="volume_after_ml" type="NUMERIC(8,2)"/>
+            <column name="volume_consumed_ml" type="NUMERIC(8,2)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="weight_consumed_g" type="NUMERIC(8,2)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="density_used" type="NUMERIC(5,3)"/>
+            <column name="calories" type="NUMERIC(8,2)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="protein_g" type="NUMERIC(8,3)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="carbohydrates_g" type="NUMERIC(8,3)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="fat_g" type="NUMERIC(8,3)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="fiber_g" type="NUMERIC(8,3)" defaultValueNumeric="0"/>
+            <column name="iron_mg" type="NUMERIC(8,3)" defaultValueNumeric="0"/>
+            <column name="calcium_mg" type="NUMERIC(8,3)" defaultValueNumeric="0"/>
+            <column name="other_nutrients" type="JSONB" defaultValue="{}"/>
+            <column name="raw_telemetry" type="JSONB"/>
+            <column name="created_at" type="TIMESTAMPTZ" defaultValueComputed="NOW()">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+
+        <createIndex indexName="idx_consumption_customer_time" tableName="consumption_events" schemaName="nutritionmeter">
+            <column name="customer_id"/>
+            <column name="event_time" descending="true"/>
+        </createIndex>
+
+        <createIndex indexName="idx_consumption_container_time" tableName="consumption_events" schemaName="nutritionmeter">
+            <column name="container_id"/>
+            <column name="event_time" descending="true"/>
+        </createIndex>
+
+        <sql>CREATE INDEX idx_consumption_date ON nutritionmeter.consumption_events ((timezone('UTC', event_time)::DATE));</sql>
+
+        <rollback>
+            <dropTable tableName="consumption_events" schemaName="nutritionmeter"/>
+        </rollback>
+    </changeSet>
+
+</databaseChangeLog>

@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+                            http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-4.20.xsd">
+
+    <changeSet id="nutritionmeter-008-idempotency-key" author="stornuage">
+        <createTable tableName="idempotency_key" schemaName="nutritionmeter">
+            <column name="idempotency_key" type="VARCHAR(128)">
+                <constraints primaryKey="true" nullable="false"/>
+            </column>
+            <column name="source" type="VARCHAR(50)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="processed_at" type="TIMESTAMPTZ" defaultValueComputed="NOW()">
+                <constraints nullable="false"/>
+            </column>
+            <column name="expires_at" type="TIMESTAMPTZ">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+
+        <createIndex indexName="idx_nm_idempotency_key_expires_at" tableName="idempotency_key" schemaName="nutritionmeter">
+            <column name="expires_at"/>
+        </createIndex>
+
+        <rollback>
+            <dropTable tableName="idempotency_key" schemaName="nutritionmeter"/>
+        </rollback>
+    </changeSet>
+
+</databaseChangeLog>

@@ -1,0 +1,75 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+                            http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-4.20.xsd">
+
+    <changeSet id="nutritionmeter-004-container-registry" author="stornuage">
+        <createTable tableName="container_registry" schemaName="nutritionmeter">
+            <column name="container_id" type="VARCHAR(50)">
+                <constraints primaryKey="true" nullable="false"/>
+            </column>
+            <column name="customer_id" type="VARCHAR(50)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="profile_id" type="UUID">
+                <constraints nullable="false" foreignKeyName="fk_container_registry_profile"
+                             referencedTableSchemaName="nutritionmeter"
+                             referencedTableName="container_profiles" referencedColumnNames="id"/>
+            </column>
+            <column name="current_item_key" type="VARCHAR(50)">
+                <constraints foreignKeyName="fk_container_registry_item"
+                             referencedTableSchemaName="nutritionmeter"
+                             referencedTableName="item_nutrition" referencedColumnNames="item_key"/>
+            </column>
+            <column name="item_assigned_at" type="TIMESTAMPTZ"/>
+            <column name="last_distance_mm" type="NUMERIC(6,2)"/>
+            <column name="last_volume_ml" type="NUMERIC(8,2)"/>
+            <column name="last_reading_at" type="TIMESTAMPTZ"/>
+            <column name="location" type="VARCHAR(100)"/>
+            <column name="display_name" type="VARCHAR(100)"/>
+            <column name="is_active" type="BOOLEAN" defaultValueBoolean="true">
+                <constraints nullable="false"/>
+            </column>
+            <column name="created_at" type="TIMESTAMPTZ" defaultValueComputed="NOW()">
+                <constraints nullable="false"/>
+            </column>
+            <column name="updated_at" type="TIMESTAMPTZ" defaultValueComputed="NOW()">
+                <constraints nullable="false"/>
+            </column>
+            <column name="registration_status" type="VARCHAR(20)"/>
+            <column name="processing_status" type="VARCHAR(30)"/>
+            <column name="prediction_confidence" type="NUMERIC(4,3)"/>
+            <column name="prediction_status" type="VARCHAR(30)"/>
+            <column name="alternative_item_keys" type="JSONB"/>
+            <column name="last_prediction_at" type="TIMESTAMPTZ"/>
+            <column name="has_pending_telemetry" type="BOOLEAN" defaultValueBoolean="false"/>
+            <column name="pending_lidar_distance_mm" type="NUMERIC(6,2)"/>
+            <column name="pending_image_key" type="VARCHAR(500)"/>
+            <column name="pending_timestamp" type="TIMESTAMPTZ"/>
+            <column name="pending_battery_percentage" type="NUMERIC(5,2)"/>
+            <column name="last_weight_grams" type="NUMERIC(10,2)"/>
+            <column name="last_fill_percentage" type="NUMERIC(5,2)"/>
+            <column name="consumption_rate_per_day" type="NUMERIC(10,2)"/>
+            <column name="estimated_days_remaining" type="NUMERIC(6,2)"/>
+            <column name="last_enrichment_at" type="TIMESTAMPTZ"/>
+            <column name="last_verification_action" type="VARCHAR(30)"/>
+            <column name="last_verified_at" type="TIMESTAMPTZ"/>
+            <column name="custom_label_status" type="VARCHAR(30)"/>
+        </createTable>
+
+        <createIndex indexName="idx_nm_container_registry_customer" tableName="container_registry" schemaName="nutritionmeter">
+            <column name="customer_id"/>
+        </createIndex>
+
+        <createIndex indexName="idx_nm_container_registry_profile" tableName="container_registry" schemaName="nutritionmeter">
+            <column name="profile_id"/>
+        </createIndex>
+
+        <rollback>
+            <dropTable tableName="container_registry" schemaName="nutritionmeter"/>
+        </rollback>
+    </changeSet>
+
+</databaseChangeLog>

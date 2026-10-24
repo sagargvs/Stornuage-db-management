@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+                            http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-4.20.xsd">
+
+    <changeSet id="nutritionmeter-006-item-depletion-forecast" author="stornuage">
+        <createTable tableName="item_depletion_forecast" schemaName="nutritionmeter">
+            <column name="id" type="UUID" defaultValueComputed="gen_random_uuid()">
+                <constraints primaryKey="true" nullable="false"/>
+            </column>
+            <column name="container_id" type="VARCHAR(50)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="customer_id" type="VARCHAR(50)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="item_key" type="VARCHAR(50)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="criticality_score" type="NUMERIC(5,3)"/>
+            <column name="criticality_level" type="VARCHAR(20)"/>
+            <column name="shopping_list_action" type="VARCHAR(30)"/>
+            <column name="computed_at" type="TIMESTAMPTZ" defaultValueComputed="NOW()">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+
+        <createIndex indexName="idx_depletion_customer" tableName="item_depletion_forecast" schemaName="nutritionmeter">
+            <column name="customer_id"/>
+        </createIndex>
+
+        <createIndex indexName="idx_depletion_container" tableName="item_depletion_forecast" schemaName="nutritionmeter">
+            <column name="container_id"/>
+        </createIndex>
+
+        <rollback>
+            <dropTable tableName="item_depletion_forecast" schemaName="nutritionmeter"/>
+        </rollback>
+    </changeSet>
+
+</databaseChangeLog>

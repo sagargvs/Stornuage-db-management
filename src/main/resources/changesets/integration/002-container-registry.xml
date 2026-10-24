@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+                            http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-4.20.xsd">
+
+    <changeSet id="integration-002-container-registry" author="stornuage">
+        <createTable tableName="container_registry" schemaName="integration">
+            <column name="container_id" type="VARCHAR(50)">
+                <constraints primaryKey="true" nullable="false"/>
+            </column>
+            <column name="customer_id" type="VARCHAR(50)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="display_name" type="VARCHAR(100)"/>
+            <column name="location" type="VARCHAR(100)"/>
+            <column name="registration_status" type="VARCHAR(20)" defaultValue="PROVISIONED">
+                <constraints nullable="false"/>
+            </column>
+            <column name="is_active" type="BOOLEAN" defaultValueBoolean="true">
+                <constraints nullable="false"/>
+            </column>
+            <column name="created_at" type="TIMESTAMPTZ" defaultValueComputed="NOW()">
+                <constraints nullable="false"/>
+            </column>
+            <column name="updated_at" type="TIMESTAMPTZ" defaultValueComputed="NOW()">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+
+        <createIndex indexName="idx_container_registry_customer_id" tableName="container_registry" schemaName="integration">
+            <column name="customer_id"/>
+        </createIndex>
+
+        <createIndex indexName="idx_container_registry_registration_status" tableName="container_registry" schemaName="integration">
+            <column name="registration_status"/>
+        </createIndex>
+
+        <rollback>
+            <dropTable tableName="container_registry" schemaName="integration"/>
+        </rollback>
+    </changeSet>
+
+</databaseChangeLog>

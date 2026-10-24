@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+                            http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-4.20.xsd">
+
+    <changeSet id="nutritionmeter-011-rename-prediction-columns" author="stornuage">
+        <comment>
+            Rename prediction-tracking columns for clarity. nutritionmeter's "prediction"
+            state is specifically the enrichment outcome (user correction + nutrition
+            computation), not the raw IP-service prediction (which lives in
+            integration.container_registry). The pending-telemetry columns are kept — they
+            back a separate user-correction saga owned by nutritionmeter
+            (TelemetryProcessingService.stashPendingTelemetry → CorrectionService.apply).
+        </comment>
+        <renameColumn tableName="container_registry" schemaName="nutritionmeter"
+                      oldColumnName="prediction_status" newColumnName="enrichment_prediction_status"
+                      columnDataType="VARCHAR(30)"/>
+        <renameColumn tableName="container_registry" schemaName="nutritionmeter"
+                      oldColumnName="last_prediction_at" newColumnName="last_enriched_at"
+                      columnDataType="TIMESTAMPTZ"/>
+    </changeSet>
+
+</databaseChangeLog>

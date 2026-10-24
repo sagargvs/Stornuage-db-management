@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+                            http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-4.20.xsd">
+
+    <changeSet id="nutritionmeter-002-container-profile" author="stornuage">
+        <createTable tableName="container_profiles" schemaName="nutritionmeter">
+            <column name="id" type="UUID" defaultValueComputed="gen_random_uuid()">
+                <constraints primaryKey="true" nullable="false"/>
+            </column>
+            <column name="container_type" type="VARCHAR(30)">
+                <constraints nullable="false" unique="true"/>
+            </column>
+            <column name="display_name" type="VARCHAR(100)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="capacity_ml" type="INT">
+                <constraints nullable="false"/>
+            </column>
+            <column name="shape" type="VARCHAR(20)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="dimensions" type="JSONB">
+                <constraints nullable="false"/>
+            </column>
+            <column name="empty_reading_mm" type="NUMERIC(6,2)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="sensor_gap_mm" type="NUMERIC(5,2)" defaultValueNumeric="10"/>
+            <column name="volume_coefficient" type="NUMERIC(4,3)" defaultValueNumeric="0.95"/>
+            <column name="is_active" type="BOOLEAN" defaultValueBoolean="true">
+                <constraints nullable="false"/>
+            </column>
+            <column name="created_at" type="TIMESTAMPTZ" defaultValueComputed="NOW()">
+                <constraints nullable="false"/>
+            </column>
+            <column name="updated_at" type="TIMESTAMPTZ" defaultValueComputed="NOW()">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+
+        <rollback>
+            <dropTable tableName="container_profiles" schemaName="nutritionmeter"/>
+        </rollback>
+    </changeSet>
+
+</databaseChangeLog>

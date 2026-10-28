@@ -12,7 +12,7 @@ on:
 jobs:
   apply:
     name: Apply to Postgres (EC2)
-    runs-on: ubuntu-latest
+    runs-on: [self-hosted, stornuage-db]
     steps:
       - uses: actions/checkout@v4
 
@@ -28,11 +28,14 @@ jobs:
           LB_USER: ${{ secrets.LB_USER }}
           LB_PASSWORD: ${{ secrets.LB_PASSWORD }}
         run: |
-          sed \
-            -e "s|\${LB_URL}|${LB_URL}|g" \
-            -e "s|\${LB_USER}|${LB_USER}|g" \
-            -e "s|\${LB_PASSWORD}|${LB_PASSWORD}|g" \
-            liquibase.properties.template > src/main/resources/liquibase.properties
+          : "${LB_URL:?LB_URL secret is not set}"
+          : "${LB_USER:?LB_USER secret is not set}"
+          : "${LB_PASSWORD:?LB_PASSWORD secret is not set}"
+          envsubst '${LB_URL} ${LB_USER} ${LB_PASSWORD}' \
+            < liquibase.properties.template \
+            > src/main/resources/liquibase.properties
+          echo "Rendered properties (password redacted):"
+          grep -v '^password=' src/main/resources/liquibase.properties
 
       - name: liquibase status
         run: mvn -B liquibase:status
